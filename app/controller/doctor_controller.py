@@ -1,8 +1,8 @@
 from flask import jsonify, request
 
 from app.controller.doctor_helper_controller import is_valid_hospital_data, is_valid_doctor_search_data, \
-    check_doctor_data, is_valid_doctor_request_data
-from app.service import doctor_service, user_service
+    check_doctor_data, is_valid_doctor_request_data, check_doctor_update_data
+from app.service import doctor_service
 from errors import bad_request
 
 
@@ -28,7 +28,6 @@ def search_doctors_by_department_controller(department):
     return jsonify(doctors)
 
 
-
 def add_doctor_controller():
     data = request.get_json()
     check_failed = check_doctor_data(data)
@@ -42,7 +41,7 @@ def add_doctor_controller():
 
 def update_doctor_controller(doctor_id):
     data = request.get_json()
-    check_failed = check_doctor_data(data)
+    check_failed = check_doctor_update_data(data, doctor_id)
     if check_failed:
         return check_failed
     if doctor_service.update_doctor_service(doctor_id, data):
@@ -93,7 +92,7 @@ def add_doctor_contact_request_controller(user_id):
     if not is_valid_doctor_request_data(data):
         return bad_request("Invalid doctor contact request data")
     if not doctor_service.get_doctor_by_id_service(data['doctor_id']):
-        return bad_request("Hospital is not registered")
+        return bad_request("Cannot find doctor")
     if doctor_service.add_doctor_contact_request_service(data, user_id):
         return jsonify({'message': 'Doctor contact request created successfully'}), 200
     else:
@@ -115,13 +114,8 @@ def get_doctor_by_department_controller(department):
     if not department or not isinstance(department, str) or department == '':
         return bad_request("Invalid format")
 
-    doctors = doctor_service.get_doctor_by_department_service(department)
+    doctors = doctor_service.get_doctors_by_department_service(department)
     if doctors:
         return jsonify(doctors)
     else:
         return jsonify({'error': 'No doctors found for the given department'}), 404
-
-
-
-
-

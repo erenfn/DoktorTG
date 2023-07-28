@@ -18,10 +18,7 @@ def is_valid_doctor_search_data(data):
         return False
     if 'location' in data and not isinstance(data['location'], str):
         return False
-    if any(field in data for field in fields):
-        return True
-    else:
-        return False
+    return any(field in data for field in fields)
 
 
 def is_valid_hospital_data(data):
@@ -37,17 +34,60 @@ def is_valid_doctor_data(data):
         and isinstance(data['hospital'], int)
 
 
+def is_valid_doctor_update_data(data):
+    fields = {'name', 'department', 'phone_number', 'email', 'hospital'}
+
+    if 'hospital' in data and not isinstance(data['hospital'], int):
+        return False
+
+    for field in fields - {'hospital'}:
+        if field in data and not isinstance(data[field], (int, str)):
+            return False
+
+    return any(field in data for field in fields)
+
+
+def check_doctor_update_data(data, doctor_id):
+    if not data or not is_valid_doctor_update_data(data):
+        return bad_request("Invalid doctor data")
+
+    if 'phone_number' in data:
+        doctor = doctor_service.get_doctor_by_phone_service(data['phone_number'])
+        if doctor and doctor['id'] != doctor_id:
+            return bad_request('phone number already exists')
+        if not is_integer(data['phone_number']):
+            return bad_request('Phone number must be a number')
+
+    if 'email' in data:
+        doctor = doctor_service.get_doctor_by_email_service(data['email'])
+        if doctor and doctor['id'] != doctor_id:
+            return bad_request('email already exists')
+        if not is_valid_email(data['email']):
+            return bad_request('Invalid email format.')
+
+    if 'name' in data and not is_valid_name(data['name']):
+        return bad_request('Name should not contain any numbers.')
+
+    return None
+
+
 def check_doctor_data(data):
     if not data or not is_valid_doctor_data(data):
         return bad_request("Invalid doctor data")
+
     if doctor_service.get_doctor_by_phone_service(data['phone_number']):
         return bad_request('phone number already exists')
+
     if doctor_service.get_doctor_by_email_service(data['email']):
         return bad_request('email already exists')
+
     if not is_integer(data['phone_number']):
         return bad_request('Phone number must be a number')
+
     if not is_valid_email(data['email']):
         return bad_request('Invalid email format.')
+
     if not is_valid_name(data['name']):
         return bad_request('Name should not contain any numbers.')
+
     return None
