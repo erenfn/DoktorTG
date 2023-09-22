@@ -66,6 +66,14 @@ def add_hospital_service(data):
     return doctor_db.insert_db(hospital)
 
 
+def get_hospital_by_id_service(hospital_id):
+    hospital = doctor_db.get_hospital_by_id_db(hospital_id)
+    if hospital:
+        return hospital.to_dict()
+    else:
+        return None
+
+
 def doctor_search_service(data, user_id):
     data['patient_id'] = user_id
     doctor_search = DoctorSearch().from_dict(data)
@@ -84,7 +92,10 @@ def add_doctor_contact_request_service(data, user_id):
 
 def get_hospital_id_by_name_service(hospital_name):
     hospital = doctor_db.get_hospital_id_by_name_db(hospital_name)
-    return hospital.to_dict()
+    if hospital:
+        return hospital.to_dict()
+    else:
+        return None
 
 
 def get_doctors_by_department_service(department):
@@ -106,3 +117,8 @@ def get_doctor_by_email_service(email):
         return doctor.to_dict()
     else:
         return doctor
+
+
+def get_all_hospitals_service():
+    hospitals = doctor_db.get_all_hospitals_db()
+    return [hospital.to_dict() for hospital in hospitals]

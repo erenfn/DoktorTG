@@ -3,6 +3,7 @@ from sqlalchemy import func
 from app import db
 from app.models.doctor_models import Doctor, Hospital, DoctorSearch
 
+
 def get_doctor_by_id_db(doctor_id):
     return db.session.query(Doctor).filter(Doctor.id == doctor_id).first()
 
@@ -76,14 +77,20 @@ def get_doctors_in_hospital_db(hospital_name: str = None, hospital_id: int = Non
         return db.session.query(Doctor).join(Hospital).filter(Hospital.id == hospital_id).all()
 
 
-
-def get_hospital_id_by_name_db(hospital_name) -> Hospital:
+def get_hospital_id_by_name_db(hospital_name) -> Optional[Hospital]:
     hospital = db.session.query(Hospital).filter(Hospital.name == hospital_name).first()
     if hospital:
         return hospital.id
     else:
         return None
 
+
+def get_hospital_by_id_db(hospital_id) -> Optional[Hospital]:
+    hospital = db.session.query(Hospital).filter(Hospital.id == hospital_id).first()
+    if hospital:
+        return hospital
+    else:
+        return None
 
 
 def search_doctors_db(doctor_search: DoctorSearch) -> List:
@@ -102,3 +109,6 @@ def search_doctors_db(doctor_search: DoctorSearch) -> List:
 
     return query.all()
 
+
+def get_all_hospitals_db():
+    return db.session.query(Hospital).all()

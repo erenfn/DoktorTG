@@ -106,7 +106,7 @@ def signup_controller():
 
     signup_info = user_service.signup_service(data)
     if signup_info:
-        return jsonify(token=signup_info)
+        return jsonify(token=signup_info[0], name=signup_info[1])
     else:
         return bad_request("System Error")
 

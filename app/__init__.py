@@ -4,6 +4,7 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from config.config import Config
+from flask_cors import CORS
 import app.db
 
 db = SQLAlchemy()
@@ -17,6 +18,7 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
     db.init_app(app)
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
     MIGRATION_DIR = os.path.join('config', 'database_migrations_psql')
     migrate.init_app(app, db, directory=MIGRATION_DIR, compare_type=True)

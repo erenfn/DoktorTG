@@ -7,6 +7,10 @@ from app.controller import doctor_controller
 def get_all_doctors():
     return doctor_controller.get_all_doctors_controller()
 
+@bp.route('/getAllHospitals', methods=["GET"])
+def get_all_hospitals():
+    return doctor_controller.get_all_hospitals_controller()
+
 
 @bp.route('/getDoctorByName/<name>', methods=["GET"])
 def get_doctor_by_name(name):

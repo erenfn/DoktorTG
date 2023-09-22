@@ -119,3 +119,8 @@ def get_doctor_by_department_controller(department):
         return jsonify(doctors)
     else:
         return jsonify({'error': 'No doctors found for the given department'}), 404
+
+
+def get_all_hospitals_controller():
+    hospitals = doctor_service.get_all_hospitals_service()
+    return jsonify(hospitals)

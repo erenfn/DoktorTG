@@ -36,7 +36,7 @@ def signup_service(data):
     new_user.set_password(data['password'])
     new_user.from_dict(data)
     if user_db.insert_new_user_to_db(new_user):
-        return new_user.get_token()
+        return new_user.get_token(), new_user.name
     return False
 
 

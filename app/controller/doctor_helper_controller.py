@@ -31,7 +31,7 @@ def is_valid_doctor_data(data):
     fields = {'name', 'department', 'phone_number', 'email', 'hospital'}
     return all(field in data for field in fields) \
         and all(isinstance(data[field], str) for field in fields - {'hospital'}) \
-        and isinstance(data['hospital'], int)
+        and is_integer(data['hospital'])
 
 
 def is_valid_doctor_update_data(data):
@@ -41,7 +41,7 @@ def is_valid_doctor_update_data(data):
         return False
 
     for field in fields - {'hospital'}:
-        if field in data and not isinstance(data[field], (int, str)):
+        if field in data and not isinstance(data[field], str):
             return False
 
     return any(field in data for field in fields)
@@ -75,6 +75,8 @@ def check_doctor_data(data):
     if not data or not is_valid_doctor_data(data):
         return bad_request("Invalid doctor data")
 
+    data['hospital'] = int(data['hospital'])
+
     if doctor_service.get_doctor_by_phone_service(data['phone_number']):
         return bad_request('phone number already exists')
 
@@ -89,5 +91,8 @@ def check_doctor_data(data):
 
     if not is_valid_name(data['name']):
         return bad_request('Name should not contain any numbers.')
+
+    if not doctor_service.get_hospital_by_id_service(data['hospital']):
+        return bad_request('Hospital does not exist')
 
     return None

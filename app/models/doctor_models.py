@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 
 from app import db
 from app.models.user_models import User
@@ -9,6 +9,7 @@ class Hospital(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     location = db.Column(db.String(200))
+    __table_args__ = (UniqueConstraint('name', 'location'),)
 
     def to_dict(self):
         data = {
